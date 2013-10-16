@@ -181,7 +181,7 @@ class BackgroundRenderer(object):
     if not self.icon:
       return
 
-    assert s in [16, 32, 128, 256, 512]
+    assert s in [16, 32, 128, 256, 512, 1024]
     a = list(self.rect[s])
 
     # convert from `flow` coords to cocoa
@@ -297,7 +297,7 @@ class TextRenderer(object):
     fontname = 'LucidaGrande-Bold'
 
     # Prepare text format
-    fontsizes = { 512: 72.0,  256: 36.0,  128: 18.0,  32: 7.0,  16: 3.0 }
+    fontsizes = { 1024: 144.0, 512: 72.0,  256: 36.0,  128: 18.0,  32: 7.0,  16: 3.0 }
     # http://developer.apple.com/documentation/Cocoa/Conceptual/AttributedStrings/Articles/standardAttributes.html#//apple_ref/doc/uid/TP40004903
     attribs = {
       NSParagraphStyleAttributeName: self.centeredStyle(),
@@ -307,7 +307,7 @@ class TextRenderer(object):
     }
 
     # tighten font a bit for some sizes
-    if s in [256, 512]:
+    if s in [256, 512, 1024]:
       attribs[NSKernAttributeName] = -1.0
     elif s == 32:
       attribs[NSKernAttributeName] = -0.25
@@ -320,16 +320,17 @@ class TextRenderer(object):
     """Draws text `s` into the current context of size `s`."""
 
     textRects = {
+        1024: ((0, 7), (1024, 245)),
         512: ((0, 7), (512, 119)),
-        128: ((0, 6), (128, 26.5)),
         256: ((0, 7), (256, 57)),
+        128: ((0, 6), (128, 26.5)),
          16: ((1, 1), (15, 5)),
          #32: ((1, 1), (31, 9))
         }
 
     attribs = self.attribsAtSize(s)
     text = NSString.stringWithString_(text)
-    if s in [16, 128, 256, 512]:
+    if s in [16, 128, 256, 512, 1024]:
       text.drawInRect_withAttributes_(textRects[s], attribs)
     elif s == 32:
       # Try to align text on pixel boundary:
@@ -386,11 +387,11 @@ def createIcon(s, bg, textRenderer, text):
 def textDictFromTextList(l):
   assert 1 <= len(l) <= 3
   if len(l) == 1:
-    return dict.fromkeys([16, 32, 128, 256, 512], l[0])
+    return dict.fromkeys([16, 32, 128, 256, 512, 1024], l[0])
   elif len(l) == 2:
-    return dict(zip([16, 32], 2*[l[1]]) + zip((128, 256, 512), 3*[l[0]]))
+    return dict(zip([16, 32], 2*[l[1]]) + zip((128, 256, 512, 1024), 3*[l[0]]))
   elif len(l) == 3:
-    return dict([(16, l[2]), (32, l[1])] + zip((128, 256, 512), 3*[l[0]]))
+    return dict([(16, l[2]), (32, l[1])] + zip((128, 256, 512, 1024), 3*[l[0]]))
 
 
 def saveIcns(icons, icnsName, makeIcns='./makeicns'):
@@ -398,7 +399,7 @@ def saveIcns(icons, icnsName, makeIcns='./makeicns'):
 
   Params:
     icons: A dict that contains icon size as key and Surface as value.
-           Valid keys are 512, 256, 128, 32, 16
+           Valid keys are 1024, 512, 256, 128, 32, 16
     icnsname: Name of the output file
   """
   # If IconFamily was less buggy, we could wrap it into a python module and
@@ -411,7 +412,8 @@ def saveIcns(icons, icnsName, makeIcns='./makeicns'):
       #32: IconFamily.kLarge32BitData,
       #128: IconFamily.kThumbnail32BitData,
       #256: IconFamily.kIconServices256PixelDataARGB,
-      #512: IconFamily.IconServices512PixelDataARGB,
+      #512: IconFamily.kIconServices512PixelDataARGB,
+      #1024: IconFamily.kIconServices1024PixelDataARGB,
   #}
   #maskDict = {
       #16: IconFamily.kSmall8BitMask,
@@ -429,7 +431,7 @@ def saveIcns(icons, icnsName, makeIcns='./makeicns'):
   try:
     args = []
     for s, icon in icons.items():
-      assert s in [512, 256, 128, 32, 16]
+      assert s in [1024, 512, 256, 128, 32, 16]
       assert icon.size() == [s, s]
       icon.save(TMPFILE % s)
       args.append('-%d %s' % (s, TMPFILE % s))

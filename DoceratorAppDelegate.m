@@ -81,7 +81,8 @@
 	
 	[dropAppIconHereLabel setHidden: NO];
 	
-		[iconLabelsTableView setEnabled: YES];
+    [iconLabelsTableView setEnabled: YES];
+	[size1024Checkbox setEnabled: NO];
 	[size512Checkbox setEnabled: NO];
 	[size256Checkbox setEnabled: NO];
 	[size128Checkbox setEnabled: NO];
@@ -148,6 +149,8 @@
 {
 	// create string specifying icon sizes
 	NSMutableString *sizesStr = [NSMutableString stringWithCapacity: 100];
+	if ([size1024Checkbox intValue])
+		[sizesStr appendString: @"1024,"];
 	if ([size512Checkbox intValue])
 		[sizesStr appendString: @"512,"];
 	if ([size256Checkbox intValue])
@@ -168,7 +171,7 @@
 	}
 	
 	//sample cmd
-	//python docerator.py --sizes 512,256,128,32,16 --appicon /path/to/icon.icns --text DDS:
+	//python docerator.py --sizes 1024,512,256,128,32,16 --appicon /path/to/icon.icns --text DDS:
 	NSMutableArray *arguments = [[NSMutableArray alloc] initWithCapacity: 256];
 	
 	[arguments addObjectsFromArray: [NSArray arrayWithObjects:  
@@ -290,6 +293,7 @@
 	}
 	
 	// update controls to reflect that we've opened an icns file
+	[size1024Checkbox setEnabled: YES];
 	[size512Checkbox setEnabled: YES];
 	[size256Checkbox setEnabled: YES];
 	[size128Checkbox setEnabled: YES];
@@ -298,6 +302,7 @@
 	
 	[iconLabelsTableView setEnabled: YES];
 	
+	[size1024Checkbox setIntValue: (highestRep >= 1024)];
 	[size512Checkbox setIntValue: (highestRep >= 512)];
 	[size256Checkbox setIntValue: (highestRep >= 256)];
 	[size128Checkbox setIntValue: (highestRep >= 128)];

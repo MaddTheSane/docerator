@@ -100,6 +100,7 @@
 //
 //  elementType                       dimensions   format
 //  -------------------               ----------   ---------------------------------------
+//  kIconServices1024PixelDataARGB    512 x 512   32-bit RGBA, 32-bit RGB, or 24-bit RGB
 //  kIconServices512PixelDataARGB     512 x 512   32-bit RGBA, 32-bit RGB, or 24-bit RGB
 //  kIconServices256PixelDataARGB     256 x 256   32-bit RGBA, 32-bit RGB, or 24-bit RGB
 //  kThumbnail32BitData               128 x 128   32-bit RGBA, 32-bit RGB, or 24-bit RGB
@@ -130,6 +131,7 @@
 
 // Gets the image data for one of the icon family's elements as a new, 32-bit
 // RGBA NSBitmapImageRep.  The specified elementType should be one of
+// kIconServices1024PixelDataARGB,
 // kIconServices512PixelDataARGB, kIconServices256PixelDataARGB,
 // kThumbnail32BitData, kLarge32BitData, or kSmall32BitData.
 //

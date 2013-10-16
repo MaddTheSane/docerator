@@ -34,6 +34,7 @@
     IBOutlet id window;
 	IBOutlet id	appIconImageView;
 	IBOutlet id appIconFilenameLabel;
+	IBOutlet id size1024Checkbox;
 	IBOutlet id size512Checkbox;
 	IBOutlet id size256Checkbox;
 	IBOutlet id size128Checkbox;
