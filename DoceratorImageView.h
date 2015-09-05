@@ -33,8 +33,7 @@
 {
 	id delegate;
 }
--(void)setDelegate: (id)theDelegate;
--(id)delegate;
+@property (assign) id delegate;
 -(void)setImage:(NSImage *)newImage;
 -(void)clear;
 

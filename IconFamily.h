@@ -24,70 +24,70 @@
 #import <Cocoa/Cocoa.h>
 #import <Carbon/Carbon.h>
 
-// This class is a Cocoa/Objective-C wrapper for the Mac OS X Carbon API's
-// "icon family" data type.  Its main purpose is to enable Cocoa applications
-// to easily create custom file icons from NSImage instances, and thus take
-// advantage of Mac OS X's new larger RGBA "thumbnail" icon format to provide
-// richly detailed thumbnail previews of the files' contents.
-//
-// Using IconFamily, this becomes as simple as:
-//
-//      id iconFamily = [IconFamily iconFamilyWithThumbnailsOfImage:anImage];
-//      [iconFamily setAsCustomIconForFile:anExistingFile];
-//
-// You can also write an icon family to an .icns file using the -writeToFile:
-// method.
+/// This class is a Cocoa/Objective-C wrapper for the Mac OS X Carbon API's
+/// "icon family" data type.  Its main purpose is to enable Cocoa applications
+/// to easily create custom file icons from NSImage instances, and thus take
+/// advantage of Mac OS X's new larger RGBA "thumbnail" icon format to provide
+/// richly detailed thumbnail previews of the files' contents.
+///
+/// Using IconFamily, this becomes as simple as:
+///
+///      id iconFamily = [IconFamily iconFamilyWithThumbnailsOfImage:anImage];
+///      [iconFamily setAsCustomIconForFile:anExistingFile];
+///
+/// You can also write an icon family to an .icns file using the -writeToFile:
+/// method.
 
 @interface IconFamily : NSObject
 {
     IconFamilyHandle hIconFamily;
 }
 
-// Convenience methods.  These use the corresponding -init... methods to return
-// an autoreleased IconFamily instance.
+/// Convenience methods.  These use the corresponding -init... methods to return
+/// an autoreleased IconFamily instance.
 
-+ (IconFamily*) iconFamily;
-+ (IconFamily*) iconFamilyWithContentsOfFile:(NSString*)path;
-+ (IconFamily*) iconFamilyWithIconOfFile:(NSString*)path;
-+ (IconFamily*) iconFamilyWithIconFamilyHandle:(IconFamilyHandle)hNewIconFamily;
-+ (IconFamily*) iconFamilyWithSystemIcon:(int)fourByteCode;
-+ (IconFamily*) iconFamilyWithThumbnailsOfImage:(NSImage*)image;
-+ (IconFamily*) iconFamilyWithThumbnailsOfImage:(NSImage*)image usingImageInterpolation:(NSImageInterpolation)imageInterpolation;
++ (instancetype) iconFamily;
++ (instancetype) iconFamilyWithContentsOfFile:(NSString*)path;
++ (instancetype) iconFamilyWithIconOfFile:(NSString*)path;
++ (instancetype) iconFamilyWithIconFamilyHandle:(IconFamilyHandle)hNewIconFamily;
++ (instancetype) iconFamilyWithSystemIcon:(int)fourByteCode;
++ (instancetype) iconFamilyWithThumbnailsOfImage:(NSImage*)image;
++ (instancetype) iconFamilyWithThumbnailsOfImage:(NSImage*)image usingImageInterpolation:(NSImageInterpolation)imageInterpolation;
 
-// Initializes as a new, empty IconFamily.  This is IconFamily's designated
-// initializer method.
+/// Initializes as a new, empty IconFamily.  This is IconFamily's designated
+/// initializer method.
 
-- init;
+- (instancetype)init;
 
-// Initializes an IconFamily by loading the contents of an .icns file.
+/// Initializes an IconFamily by loading the contents of an .icns file.
 
-- initWithContentsOfFile:(NSString*)path;
+- (instancetype)initWithContentsOfFile:(NSString*)path;
 
-// Initializes an IconFamily from an existing Carbon IconFamilyHandle.
+/// Initializes an IconFamily from an existing Carbon IconFamilyHandle.
 
-- initWithIconFamilyHandle:(IconFamilyHandle)hNewIconFamily;
+- (instancetype)initWithIconFamilyHandle:(IconFamilyHandle)hNewIconFamily;
 
-// Initializes an IconFamily by loading the Finder icon that's assigned to a
-// file.
+/// Initializes an IconFamily by loading the Finder icon that's assigned to a
+/// file.
 
-- initWithIconOfFile:(NSString*)path;
+- (instancetype)initWithIconOfFile:(NSString*)path;
 
-// Initializes an IconFamily by referencing a standard system icon.
+/// Initializes an IconFamily by referencing a standard system icon.
 
-- initWithSystemIcon:(int)fourByteCode;
+- (instancetype)initWithSystemIcon:(OSType)fourByteCode;
 
-// Initializes an IconFamily by creating its elements from a resampled
-// NSImage.  The second form of this method allows you to specify the degree
-// of antialiasing to be used in resampling the image, by passing in one of
-// the NSImageInterpolation... constants that are defined in
-// NSGraphicsContext.h.  The first form of this initializer simply calls the
-// second form with imageInterpolation set to NSImageInterpolationHigh, which
-// produces highly smoothed thumbnails.
+/// Initializes an IconFamily by creating its elements from a resampled
+/// NSImage.  The second form of this method allows you to specify the degree
+/// of antialiasing to be used in resampling the image, by passing in one of
+/// the NSImageInterpolation... constants that are defined in
+/// NSGraphicsContext.h.  The first form of this initializer simply calls the
+/// second form with imageInterpolation set to NSImageInterpolationHigh, which
+/// produces highly smoothed thumbnails.
 
-- initWithThumbnailsOfImage:(NSImage*)image;
-- initWithThumbnailsOfImage:(NSImage*)image usingImageInterpolation:(NSImageInterpolation)imageInterpolation;
+- (instancetype)initWithThumbnailsOfImage:(NSImage*)image;
+- (instancetype)initWithThumbnailsOfImage:(NSImage*)image usingImageInterpolation:(NSImageInterpolation)imageInterpolation;
 
-// Writes the icon family to an .icns file.
+/// Writes the icon family to an .icns file.
 
 - (BOOL) writeToFile:(NSString*)path;
 
@@ -130,7 +130,7 @@
            fromBitmapImageRep:(NSBitmapImageRep*)bitmapImageRep;
 
 // Gets the image data for one of the icon family's elements as a new, 32-bit
-// RGBA NSBitmapImageRep.  The specified elementType should be one of
+// RGBA `NSBitmapImageRep`.  The specified elementType should be one of
 // kIconServices1024PixelDataARGB,
 // kIconServices512PixelDataARGB, kIconServices256PixelDataARGB,
 // kThumbnail32BitData, kLarge32BitData, or kSmall32BitData.
@@ -144,8 +144,8 @@
 
 - (NSBitmapImageRep*) bitmapImageRepWithAlphaForIconFamilyElement:(OSType)elementType;
 
-// Creates and returns an NSImage that contains the icon family's various
-// elements as its NSImageReps.
+/// Creates and returns an NSImage that contains the icon family's various
+/// elements as its NSImageReps.
 
 - (NSImage*) imageWithAllReps;
 
@@ -158,35 +158,35 @@
 
 // - (NSBitmapImageRep*) bitmapImageRepForIconFamilyElement:(OSType)elementType;
 
-// Writes the icon family to the resource fork of the specified file as its
-// kCustomIconResource, and sets the necessary Finder bits so the icon will
-// be displayed for the file in Finder views.
+/// Writes the icon family to the resource fork of the specified file as its
+/// `kCustomIconResource`, and sets the necessary Finder bits so the icon will
+/// be displayed for the file in Finder views.
 
 - (BOOL) setAsCustomIconForFile:(NSString*)path;
 - (BOOL) setAsCustomIconForFile:(NSString*)path withCompatibility:(BOOL)compat;
 
-// Same as the -setAsCustomIconForFile:... methods, but for folders (directories).
+/// Same as the `-setAsCustomIconForFile:...` methods, but for folders (directories).
 
 - (BOOL) setAsCustomIconForDirectory:(NSString*)path;
 - (BOOL) setAsCustomIconForDirectory:(NSString*)path withCompatibility:(BOOL)compat;
 
-// Removes the custom icon (if any) from the specified file's resource fork,
-// and clears the necessary Finder bits for the file.  (Note that this is a
-// class method, so you don't need an instance of IconFamily to invoke it.)
+/// Removes the custom icon (if any) from the specified file's resource fork,
+/// and clears the necessary Finder bits for the file.  (Note that this is a
+/// class method, so you don't need an instance of IconFamily to invoke it.)
 
 + (BOOL) removeCustomIconFromFile:(NSString*)path;
 
-//Same as the -removeCustomIconFromFile: method, but for folders (directories).
+///Same as the `-removeCustomIconFromFile:` method, but for folders (directories).
 
 + (BOOL) removeCustomIconFromDirectory:(NSString*)path;
 
 @end
 
-// Methods for interfacing with the Carbon Scrap Manager (analogous to and
-// interoperable with the Cocoa Pasteboard).
+/// Methods for interfacing with the Carbon Scrap Manager (analogous to and
+/// interoperable with the Cocoa Pasteboard).
 @interface IconFamily (ScrapAdditions)
 + (BOOL) canInitWithScrap;
 + (IconFamily*) iconFamilyWithScrap;
-- initWithScrap;
+- (instancetype)initWithScrap;
 - (BOOL) putOnScrap;
 @end

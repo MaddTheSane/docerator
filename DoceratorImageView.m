@@ -33,15 +33,7 @@
 
 #pragma mark Delegate
 
-- (void)setDelegate: (id)theDelegate
-{
-	delegate = theDelegate;
-}
-
-- (id)delegate
-{
-	return delegate;
-}
+@synthesize delegate;
 
 #pragma mark Dragging
 

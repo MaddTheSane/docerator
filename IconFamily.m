@@ -50,7 +50,7 @@ enum {
 // Determined by using Pasteboard Manager to put com.apple.icns data on the clipboard. Alternatively, you can determine this by copying an application to the clipboard using the Finder (select an application and press cmd-C).
 #define ICONFAMILY_PBOARD_TYPE @"'icns' (CorePasteboardFlavorType 0x69636E73)"
 
-@interface IconFamily (Internals)
+@interface IconFamily ()
 
 + (NSImage*) resampleImage:(NSImage*)image toIconWidth:(int)width usingImageInterpolation:(NSImageInterpolation)imageInterpolation;
 
@@ -68,37 +68,37 @@ enum {
 
 @implementation IconFamily
 
-+ (IconFamily*) iconFamily
++ (instancetype) iconFamily
 {
     return [[[IconFamily alloc] init] autorelease];
 }
 
-+ (IconFamily*) iconFamilyWithContentsOfFile:(NSString*)path
++ (instancetype) iconFamilyWithContentsOfFile:(NSString*)path
 {
     return [[[IconFamily alloc] initWithContentsOfFile:path] autorelease];
 }
 
-+ (IconFamily*) iconFamilyWithIconOfFile:(NSString*)path
++ (instancetype) iconFamilyWithIconOfFile:(NSString*)path
 {
     return [[[IconFamily alloc] initWithIconOfFile:path] autorelease];
 }
 
-+ (IconFamily*) iconFamilyWithIconFamilyHandle:(IconFamilyHandle)hNewIconFamily
++ (instancetype) iconFamilyWithIconFamilyHandle:(IconFamilyHandle)hNewIconFamily
 {
     return [[[IconFamily alloc] initWithIconFamilyHandle:hNewIconFamily] autorelease];
 }
 
-+ (IconFamily*) iconFamilyWithSystemIcon:(int)fourByteCode
++ (instancetype) iconFamilyWithSystemIcon:(int)fourByteCode
 {
     return [[[IconFamily alloc] initWithSystemIcon:fourByteCode] autorelease];
 }
 
-+ (IconFamily*) iconFamilyWithThumbnailsOfImage:(NSImage*)image
++ (instancetype) iconFamilyWithThumbnailsOfImage:(NSImage*)image
 {
     return [[[IconFamily alloc] initWithThumbnailsOfImage:image] autorelease];
 }
 
-+ (IconFamily*) iconFamilyWithThumbnailsOfImage:(NSImage*)image usingImageInterpolation:(NSImageInterpolation)imageInterpolation
++ (instancetype) iconFamilyWithThumbnailsOfImage:(NSImage*)image usingImageInterpolation:(NSImageInterpolation)imageInterpolation
 {
     return [[[IconFamily alloc] initWithThumbnailsOfImage:image usingImageInterpolation:imageInterpolation] autorelease];
 }
@@ -106,7 +106,7 @@ enum {
 // This is IconFamily's designated initializer.  It creates a new IconFamily that initially has no elements.
 //
 // The proper way to do this is to simply allocate a zero-sized handle (not to be confused with an empty handle) and assign it to hIconFamily.  This technique works on Mac OS X 10.2 as well as on 10.0.x and 10.1.x.  Our previous technique of allocating an IconFamily struct with a resourceSize of 0 no longer works as of Mac OS X 10.2.
-- init
+- (instancetype)init
 {
     self = [super init];
     if (self) {
@@ -119,7 +119,7 @@ enum {
     return self;
 }
 
-- initWithData:(NSData *)data
+- (instancetype)initWithData:(NSData *)data
 {
     self = [self init];
     if (self) {
@@ -137,7 +137,7 @@ enum {
     return self;
 }
 
-- initWithContentsOfFile:(NSString*)path
+- (instancetype)initWithContentsOfFile:(NSString*)path
 {
     FSRef ref;
     OSStatus result;
@@ -161,7 +161,7 @@ enum {
     return self;
 }
 
-- initWithIconFamilyHandle:(IconFamilyHandle)hNewIconFamily
+- (instancetype)initWithIconFamilyHandle:(IconFamilyHandle)hNewIconFamily
 {
     self = [self init];
     if (self) {
@@ -174,7 +174,7 @@ enum {
     return self;
 }
 
-- initWithIconOfFile:(NSString*)path
+- (instancetype)initWithIconOfFile:(NSString*)path
 {
     IconRef	iconRef;
     OSStatus	result;
@@ -228,7 +228,7 @@ enum {
     return self;
 }
 
-- initWithSystemIcon:(int)fourByteCode
+- (instancetype)initWithSystemIcon:(OSType)fourByteCode
 {
     IconRef	iconRef;
     OSErr	result;
@@ -266,13 +266,13 @@ enum {
     return self;
 }
 
-- initWithThumbnailsOfImage:(NSImage*)image
+- (instancetype)initWithThumbnailsOfImage:(NSImage*)image
 {
     // The default is to use a high degree of antialiasing, producing a smooth image.
     return [self initWithThumbnailsOfImage:image usingImageInterpolation:NSImageInterpolationHigh];
 }
 
-- initWithThumbnailsOfImage:(NSImage*)image usingImageInterpolation:(NSImageInterpolation)imageInterpolation
+- (instancetype)initWithThumbnailsOfImage:(NSImage*)image usingImageInterpolation:(NSImageInterpolation)imageInterpolation
 {
     NSImage* iconImage1024x1024;
     NSImage* iconImage512x512;
@@ -662,6 +662,7 @@ enum {
 	    hRawData = [IconFamily get32BitDataFromBitmapImageRep:bitmapImageRep requiredPixelSize:32];
 	    break;
 	    
+//#ifndef MAC_OS_X_VERSION_10_9
 	// 'l8mk' 32x32 8-bit alpha mask
 	case kLarge8BitMask:
 	    hRawData = [IconFamily get8BitMaskFromBitmapImageRep:bitmapImageRep requiredPixelSize:32];
@@ -1322,6 +1323,7 @@ enum {
 
 + (Handle) get8BitDataFromBitmapImageRep:(NSBitmapImageRep*)bitmapImageRep requiredPixelSize:(int)requiredPixelSize
 {
+#ifndef MAC_OS_X_VERSION_10_9
     Handle hRawData;
     unsigned char* pRawData;
     Size rawDataSize;
@@ -1407,6 +1409,9 @@ enum {
 	}
 	
     return hRawData;
+#else
+    return NULL;
+#endif
 }
 
 + (Handle) get8BitMaskFromBitmapImageRep:(NSBitmapImageRep*)bitmapImageRep requiredPixelSize:(int)requiredPixelSize
