@@ -29,27 +29,27 @@
 #import <Cocoa/Cocoa.h>
 #import "DoceratorImageView.h"
 
-@interface DoceratorAppDelegate : NSObject
+@interface DoceratorAppDelegate : NSObject <DoceratorImageDelegate, NSApplicationDelegate, NSTableViewDataSource, NSTableViewDelegate, NSWindowDelegate>
 {
-    IBOutlet id window;
-	IBOutlet id	appIconImageView;
-	IBOutlet id appIconFilenameLabel;
-	IBOutlet id size1024Checkbox;
-	IBOutlet id size512Checkbox;
-	IBOutlet id size256Checkbox;
-	IBOutlet id size128Checkbox;
-	IBOutlet id size32Checkbox;
-	IBOutlet id size16Checkbox;
-	IBOutlet id iconLabelsTableView;
-	IBOutlet id addLabelButton;
-	IBOutlet id removeLabelButton;
-	IBOutlet id clearButton;
-	IBOutlet id createIconButton;
-	IBOutlet id progressIndicator;
-	IBOutlet id dropAppIconHereLabel;
-	IBOutlet id progressWindow;
-	IBOutlet id commandStringWindow;
-	IBOutlet id commandStringTextView;
+    IBOutlet NSWindow			*window;
+	IBOutlet DoceratorImageView	*appIconImageView;
+	IBOutlet NSTextField		*appIconFilenameLabel;
+	IBOutlet NSButton	*size1024Checkbox;
+	IBOutlet NSButton	*size512Checkbox;
+	IBOutlet NSButton	*size256Checkbox;
+	IBOutlet NSButton	*size128Checkbox;
+	IBOutlet NSButton	*size32Checkbox;
+	IBOutlet NSButton	*size16Checkbox;
+	IBOutlet NSTableView	*iconLabelsTableView;
+	IBOutlet NSButton		*addLabelButton;
+	IBOutlet NSButton		*removeLabelButton;
+	IBOutlet NSButton		*clearButton;
+	IBOutlet NSButton		*createIconButton;
+	IBOutlet NSProgressIndicator	*progressIndicator;
+	IBOutlet NSTextField			*dropAppIconHereLabel;
+	IBOutlet NSWindow				*progressWindow;
+	IBOutlet NSWindow				*commandStringWindow;
+	IBOutlet NSTextView				*commandStringTextView;
 	
 	NSString *loadedIconPath;
 	NSMutableArray *labels;

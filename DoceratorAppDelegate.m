@@ -40,15 +40,6 @@
 	}	
 	return self;
 }
-	 
--(void)dealloc
-{
-	if (loadedIconPath != nil)
-		[loadedIconPath release];
-	[labels release];
-	[smallLabels release];
-	[super dealloc];
-}
 			 
 #pragma mark App delegate functions
 
@@ -68,7 +59,6 @@
 {
 	if (loadedIconPath != nil)
 	{
-		[loadedIconPath release];
 		loadedIconPath = nil;
 	}
 	[appIconFilenameLabel setStringValue: @""];
@@ -100,15 +90,14 @@
 	[oPanel setCanChooseFiles: NO];
 	
 	//run open panel
-	[oPanel beginSheetForDirectory:nil file:nil types:nil modalForWindow: window modalDelegate: self didEndSelector: @selector(createIconDidEnd:returnCode:contextInfo:) contextInfo: nil];
-}
-
-- (void)createIconDidEnd:(NSOpenPanel *)oPanel returnCode:(int)returnCode contextInfo:(void *)contextInfo
-{
-	if (returnCode != NSOKButton)
-		return;
-	
-	[NSTimer scheduledTimerWithTimeInterval: 0.01 target: self selector:@selector(runDoceratorTool:) userInfo: [oPanel filename] repeats: NO];
+	[oPanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
+		if (result != NSOKButton) {
+			return;
+		}
+		NSString *theFile = [[oPanel URL] path];
+		
+		[NSTimer scheduledTimerWithTimeInterval: 0.01 target: self selector:@selector(runDoceratorTool:) userInfo: theFile repeats: NO];
+	}];
 }
 
 - (void)runDoceratorTool: (NSTimer*)theTimer
@@ -135,8 +124,6 @@
 	[doceratorTask setArguments: args];
 	[doceratorTask launch];
 	[doceratorTask waitUntilExit];
-	[doceratorTask release];
-	[args release];
 	
 	// End progress sheet.
 	[progressIndicator stopAnimation: self];
@@ -220,19 +207,17 @@
 		[oPanel setPrompt:@"Select Icon"];
 		[oPanel setAllowsMultipleSelection:NO];
 		[oPanel setCanChooseDirectories: NO];
+	oPanel.allowedFileTypes = @[(NSString*)kUTTypeAppleICNS, (NSString*)kUTTypeApplicationBundle];
 				
 		//run open panel
-	[oPanel beginSheetForDirectory:nil file:nil types: [NSArray arrayWithObjects: @"icns", @"app", nil] modalForWindow: window modalDelegate: self didEndSelector: @selector(openFileDidEnd:returnCode:contextInfo:) contextInfo: nil];
-}
-
-- (void)openFileDidEnd:(NSOpenPanel *)oPanel returnCode:(int)returnCode contextInfo:(void *)contextInfo
-{	 
-	[NSApp endSheet: window];
-	[NSApp stopModal];
-	if (returnCode != NSOKButton)
-		return;
-	
-	[self loadFile: [oPanel filename]];
+	[oPanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
+		[NSApp endSheet: window];
+		[NSApp stopModal];
+		if (result != NSOKButton)
+			return;
+		
+		[self loadFile:[[oPanel URL] path]];
+	}];
 }
 
 - (NSString *)icnsForAppBundle: (NSString *)appBundlePath
@@ -275,7 +260,7 @@
 		return NO;
 
 	// load icon as image
-	NSImage *img = [[[NSImage alloc] initByReferencingFile: filePath] autorelease];
+	NSImage *img = [[NSImage alloc] initByReferencingFile: filePath];
 	if (img == NULL)
 		return NO;
 	
@@ -283,11 +268,11 @@
 	loadedIconPath = [[NSString alloc] initWithString: filePath];
 	
 	// get the largest sized icon representation
-	NSArray *reps = [img representations];
-	int i, highestRep = 0;
+	NSArray<NSImageRep*> *reps = [img representations];
+	NSInteger i, highestRep = 0;
 	for (i = 0; i < [reps count]; i++)
 	{
-		int height = [[reps objectAtIndex: i] pixelsHigh];
+		NSInteger height = [[reps objectAtIndex: i] pixelsHigh];
 		if (height > highestRep)
 			highestRep = height;
 	}
@@ -364,12 +349,12 @@
 
 #pragma mark Table view datasource
 
-- (int)numberOfRowsInTableView:(NSTableView *)aTableView
+- (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
 	return([labels count]);
 }
 
-- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
+- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
 	if ([[aTableColumn identifier] isEqualToString: @"1"])
 		return [labels objectAtIndex: rowIndex];
@@ -379,7 +364,7 @@
 	return @"";
 }
 
-- (void)tableView:(NSTableView *)aTableView setObjectValue: anObject forTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
+- (void)tableView:(NSTableView *)aTableView setObjectValue: anObject forTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
 	if ([[aTableColumn identifier] isEqualToString: @"1"])
 		[labels replaceObjectAtIndex: rowIndex withObject: anObject];
@@ -473,7 +458,6 @@
 	[alert setAlertStyle: NSCriticalAlertStyle];
 	
 	[alert beginSheetModalForWindow: window modalDelegate:self didEndSelector: nil contextInfo:nil];
-	[alert release];
 }
 
 #pragma mark - help

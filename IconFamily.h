@@ -57,7 +57,7 @@
 /// Initializes as a new, empty IconFamily.  This is IconFamily's designated
 /// initializer method.
 
-- (instancetype)init;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 /// Initializes an IconFamily by loading the contents of an .icns file.
 

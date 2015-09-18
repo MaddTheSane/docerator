@@ -27,6 +27,8 @@ void usage() {
   fprintf(stderr,
 "Keys and values include:\n");
   fprintf(stderr,
+"   1024: Name of input image for 1024x1024 variant of icon\n");
+  fprintf(stderr,
 "    512: Name of input image for 512x512 variant of icon\n");
   fprintf(stderr,
 "    256: Name of input image for 256x256 variant of icon\n");
@@ -110,7 +112,7 @@ NSBitmapImageRep* getBitmapImageRepOfSize(NSImage* img, int size) {
 int main(int argc, char* argv[]) {
   int i;
 
-  NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+  @autoreleasepool {
   NSApplicationLoad();
 
   struct {
@@ -119,11 +121,12 @@ int main(int argc, char* argv[]) {
     int size;
     NSString* inputName;
   } inputs[] = {
+    { @"1024", kIconServices1024PixelDataARGB, 0, 1024, nil },
     { @"512", kIconServices512PixelDataARGB, 0, 512, nil },
     { @"256", kIconServices256PixelDataARGB, 0, 256, nil },
-    { @"128", kThumbnail32BitData, kThumbnail8BitMask, 128, nil },
-    { @"32", kLarge32BitData, kLarge8BitMask, 32, nil },
-    { @"16", kSmall32BitData, kSmall8BitMask, 16, nil },
+    { @"128", kIconServices128PixelDataARGB, 0, 128, nil },
+    { @"32", kIconServices32PixelDataARGB, 0, 32, nil },
+    { @"16", kIconServices16PixelDataARGB, 0, 16, nil },
   };
   const int N = sizeof(inputs)/sizeof(inputs[0]);
 
@@ -169,6 +172,6 @@ int main(int argc, char* argv[]) {
   else
     NSLog(@"Failed to write \"%@\"", outputName);
 
-  [pool drain];
+  }
   return 0;
 }

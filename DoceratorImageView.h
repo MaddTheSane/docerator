@@ -28,13 +28,21 @@
 
 #import <Cocoa/Cocoa.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol DoceratorImageDelegate <NSObject, NSDraggingDestination>
+
+- (nullable NSString *)iconPath;
+
+
+@end
 
 @interface DoceratorImageView : NSImageView 
-{
-	id delegate;
-}
-@property (assign) id delegate;
--(void)setImage:(NSImage *)newImage;
+
+@property (unsafe_unretained, nullable) IBOutlet id<DoceratorImageDelegate> delegate;
+//-(void)setImage:(NSImage *)newImage;
 -(void)clear;
 
 @end
+
+NS_ASSUME_NONNULL_END

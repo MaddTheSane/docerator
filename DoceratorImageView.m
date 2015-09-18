@@ -130,8 +130,6 @@
 		 pasteboard: dragPasteboard				//pasteboard to pass to receiver
 			 source: self						//object where the image is coming from
 		  slideBack: YES];						//if the drag fails slide the icon back
-    
-	[dragImage release];
 }
 
 - (NSDragOperation)draggingSourceOperationMaskForLocal: (BOOL)flag
@@ -158,11 +156,11 @@
 -(void)setImage: (NSImage *)newImage
 {
 	// get best representation
-	NSArray *reps = [newImage representations];
-	int i, highestRep = 0;
+	NSArray<NSImageRep*> *reps = [newImage representations];
+	NSInteger i, highestRep = 0;
 	for (i = 0; i < [reps count]; i++)
 	{
-		int height = [[reps objectAtIndex: i] pixelsHigh];
+		NSInteger height = [[reps objectAtIndex: i] pixelsHigh];
 		if (height > highestRep)
 			highestRep = height;
 	}
