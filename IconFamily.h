@@ -91,6 +91,8 @@
 
 - (BOOL) writeToFile:(NSString*)path;
 
+- (BOOL) writeToURL:(NSURL*)path options:(NSDataWritingOptions)options error:(NSError**)error;
+
 // Sets the image data for one of the icon family's elements from an
 // NSBitmapImageRep.  The "elementType" parameter must be one of the icon
 // family element types listed below, and the format of the "bitmapImageRep"

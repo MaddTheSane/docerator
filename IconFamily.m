@@ -1219,6 +1219,11 @@ enum {
     return [[self data] writeToFile:path atomically:NO];
 }
 
+- (BOOL) writeToURL:(NSURL*)path options:(NSDataWritingOptions)options error:(NSError**)error
+{
+    return [[self data] writeToURL:path options:options error:error];
+}
+
 + (NSImage*) resampleImage:(NSImage*)image toIconWidth:(int)iconWidth usingImageInterpolation:(NSImageInterpolation)imageInterpolation
 {
     NSGraphicsContext* graphicsContext;
@@ -1254,10 +1259,10 @@ enum {
     }
     if (size.width >= size.height) {
         newSize.width  = iconWidth;
-        newSize.height = (float)floor( iconWidth * size.height / size.width + 0.5 );
+        newSize.height = (CGFloat)floor( iconWidth * size.height / size.width + 0.5 );
     } else {
         newSize.height = iconWidth;
-        newSize.width  = (float)floor( iconWidth * size.width / size.height + 0.5 );
+        newSize.width  = (CGFloat)floor( iconWidth * size.width / size.height + 0.5 );
     }
     [workingImage setSize:newSize];
 
@@ -1278,8 +1283,8 @@ enum {
     [graphicsContext setImageInterpolation:imageInterpolation];
     
     // Composite the working image into the icon bitmap, centered.
-    targetRect.origin.x = ((float)iconWidth - newSize.width ) / 2.0f;
-    targetRect.origin.y = ((float)iconWidth - newSize.height) / 2.0f;
+    targetRect.origin.x = ((CGFloat)iconWidth - newSize.width ) / 2.0;
+    targetRect.origin.y = ((CGFloat)iconWidth - newSize.height) / 2.0;
     targetRect.size.width = newSize.width;
     targetRect.size.height = newSize.height;
     [workingImageRep drawInRect:targetRect];
@@ -1724,5 +1729,3 @@ enum {
 }
 
 @end
-
-
