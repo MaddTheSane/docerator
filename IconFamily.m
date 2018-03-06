@@ -502,7 +502,7 @@ enum {
 		pixelsWide = 256;
 	    break;
 #endif
-	    
+        
 	// 'it32' 128x128 32-bit RGB image
 	case kThumbnail32BitData:
 		maskElementType = kThumbnail8BitMask;
@@ -711,17 +711,17 @@ enum {
 	    hRawData = [IconFamily get8BitMaskFromBitmapImageRep:bitmapImageRep requiredPixelSize:32];
 	    break;
 	    
-#ifndef MAC_OS_X_VERSION_10_9
 	// 'ICN#' 32x32 1-bit alpha mask
 	case kLarge1BitMask:
+        NSLog(@"Warning: Adding icon from an outdated icon format");
 	    hRawData = [IconFamily get1BitMaskFromBitmapImageRep:bitmapImageRep requiredPixelSize:32];
 	    break;
             
 	// 'icl8' 32x32 8-bit indexed image data
 	case kLarge8BitData:
+        NSLog(@"Warning: Adding icon from an outdated icon format");
 		hRawData = [IconFamily get8BitDataFromBitmapImageRep:bitmapImageRep requiredPixelSize:32];
 		break;
-#endif
 
 	// 'is32' 16x16 32-bit RGB image
 	case kSmall32BitData:
@@ -735,17 +735,17 @@ enum {
 	    hRawData = [IconFamily get8BitMaskFromBitmapImageRep:bitmapImageRep requiredPixelSize:16];
 	    break;
         
-#ifndef MAC_OS_X_VERSION_10_9
 	// 'ics#' 16x16 1-bit alpha mask
 	case kSmall1BitMask:
+        NSLog(@"Warning: Adding icon from an outdated icon format");
 	    hRawData = [IconFamily get1BitMaskFromBitmapImageRep:bitmapImageRep requiredPixelSize:16];
 	    break;
 
 	// 'ics8' 16x16 8-bit indexed image data
 	case kSmall8BitData:
+        NSLog(@"Warning: Adding icon from an outdated icon format");
 		hRawData = [IconFamily get8BitDataFromBitmapImageRep:bitmapImageRep requiredPixelSize:16];
 		break;
-#endif
             
     //Convenient enums that translates to older data types.
     // 'ic04' 16x16 32-bit ARGB virtual image
@@ -803,7 +803,7 @@ enum {
 {
     FSRef targetFileFSRef;
     FSRef parentDirectoryFSRef;
-    SInt16 file;
+    ResFileRefNum file;
     OSStatus result;
     struct FSCatalogInfo catInfo;
     struct FileInfo *finderInfo = (struct FileInfo *)&catInfo.finderInfo;
@@ -942,7 +942,7 @@ enum {
 {
     FSRef targetFileFSRef;
     FSRef parentDirectoryFSRef;
-    SInt16 file;
+    ResFileRefNum file;
     OSStatus result;
     struct FSCatalogInfo catInfo;
     struct FileInfo *finderInfo = (struct FileInfo *)&catInfo.finderInfo;
