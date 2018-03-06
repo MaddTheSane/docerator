@@ -34,12 +34,12 @@
     IBOutlet NSWindow			*window;
 	IBOutlet DoceratorImageView	*appIconImageView;
 	IBOutlet NSTextField		*appIconFilenameLabel;
-	IBOutlet NSButton	*size1024Checkbox;
-	IBOutlet NSButton	*size512Checkbox;
-	IBOutlet NSButton	*size256Checkbox;
-	IBOutlet NSButton	*size128Checkbox;
-	IBOutlet NSButton	*size32Checkbox;
-	IBOutlet NSButton	*size16Checkbox;
+	IBOutlet NSButton		*size1024Checkbox;
+	IBOutlet NSButton		*size512Checkbox;
+	IBOutlet NSButton		*size256Checkbox;
+	IBOutlet NSButton		*size128Checkbox;
+	IBOutlet NSButton		*size32Checkbox;
+	IBOutlet NSButton		*size16Checkbox;
 	IBOutlet NSTableView	*iconLabelsTableView;
 	IBOutlet NSButton		*addLabelButton;
 	IBOutlet NSButton		*removeLabelButton;
@@ -55,13 +55,13 @@
 	NSMutableArray *labels;
 	NSMutableArray *smallLabels;
 }
-- (NSString *)iconPath;
+@property (readonly, copy) NSString *iconPath;
 - (IBAction)clear:(id)sender;
 - (IBAction)createIcon:(id)sender;
 - (IBAction)addLabel:(id)sender;
 - (IBAction)removeSelectedLabel: (id)sender;
 - (IBAction)openFile:(id)sender;
-- (NSMutableArray *)generateDoceratorShellCommand: (NSString *)destinationPath;
+- (NSMutableArray<NSString*> *)generateDoceratorShellCommand: (NSString *)destinationPath;
 - (IBAction)showCommandString:(id)sender;
 - (IBAction)closeCommandStringWindow: (id)sender;
 - (NSString *)icnsForAppBundle: (NSString *)appBundlePath;

@@ -50,7 +50,7 @@
 + (instancetype) iconFamilyWithContentsOfFile:(NSString*)path;
 + (instancetype) iconFamilyWithIconOfFile:(NSString*)path;
 + (instancetype) iconFamilyWithIconFamilyHandle:(IconFamilyHandle)hNewIconFamily;
-+ (instancetype) iconFamilyWithSystemIcon:(int)fourByteCode;
++ (instancetype) iconFamilyWithSystemIcon:(OSType)fourByteCode;
 + (instancetype) iconFamilyWithThumbnailsOfImage:(NSImage*)image;
 + (instancetype) iconFamilyWithThumbnailsOfImage:(NSImage*)image usingImageInterpolation:(NSImageInterpolation)imageInterpolation;
 

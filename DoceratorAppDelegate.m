@@ -48,10 +48,7 @@
 	[window registerForDraggedTypes: [NSArray arrayWithObject: NSFilenamesPboardType]];
 }
 
-- (NSString *)iconPath
-{
-	return loadedIconPath;
-}
+@synthesize iconPath=loadedIconPath;
 
 #pragma mark Interface actions
 
@@ -162,7 +159,7 @@
 	NSMutableArray *arguments = [[NSMutableArray alloc] initWithCapacity: 256];
 	
 	[arguments addObjectsFromArray: [NSArray arrayWithObjects:  
-									 [[NSBundle mainBundle] pathForResource: @"docerator.py" ofType: nil],
+									 [[NSBundle mainBundle] pathForResource: @"docerator" ofType: @"py"],
 									 @"--sizes", sizesStr,
 									 @"--appicon", loadedIconPath,
 									 @"--destination", destinationPath, nil ]];
@@ -202,11 +199,11 @@
 
 - (IBAction)openFile:(id)sender
 {
-		//create open panel
-		NSOpenPanel *oPanel = [NSOpenPanel openPanel];
-		[oPanel setPrompt:@"Select Icon"];
-		[oPanel setAllowsMultipleSelection:NO];
-		[oPanel setCanChooseDirectories: NO];
+	//create open panel
+	NSOpenPanel *oPanel = [NSOpenPanel openPanel];
+	[oPanel setPrompt:@"Select Icon"];
+	[oPanel setAllowsMultipleSelection:NO];
+	[oPanel setCanChooseDirectories: NO];
 	oPanel.allowedFileTypes = @[(NSString*)kUTTypeAppleICNS, (NSString*)kUTTypeApplicationBundle];
 				
 		//run open panel
@@ -374,7 +371,7 @@
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
-	int selected = [iconLabelsTableView selectedRow];
+	NSInteger selected = [iconLabelsTableView selectedRow];
 
 	if (selected != -1) //there is a selected item
 		[removeLabelButton setEnabled: YES];

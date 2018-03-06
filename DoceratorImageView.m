@@ -108,9 +108,9 @@
 		
     //draw our original image as 50% transparent
     [dragImage lockFocus];	
-    [[self image] dissolveToPoint: NSZeroPoint fraction: .5];
+	[[self image] drawAtPoint:NSZeroPoint fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:0.5];
     [dragImage unlockFocus];//finished drawing
-    [dragImage setScalesWhenResized: YES];//we want the image to resize
+    //[dragImage setScalesWhenResized: YES];//we want the image to resize
 	
     //execute the drag
 	
@@ -169,7 +169,6 @@
 	if (highestRep > 256)
 		highestRep = 256;
 	
-	[newImage setScalesWhenResized: YES];
 	[newImage setSize: NSMakeSize(highestRep,highestRep)];
 	[super setImage: newImage];
 }

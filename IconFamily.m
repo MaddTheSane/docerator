@@ -88,7 +88,7 @@ enum {
     return [[[IconFamily alloc] initWithIconFamilyHandle:hNewIconFamily] autorelease];
 }
 
-+ (instancetype) iconFamilyWithSystemIcon:(int)fourByteCode
++ (instancetype) iconFamilyWithSystemIcon:(OSType)fourByteCode
 {
     return [[[IconFamily alloc] initWithSystemIcon:fourByteCode] autorelease];
 }
@@ -1010,7 +1010,7 @@ enum {
     BOOL exists;
     NSString *iconrPath;
     FSRef targetFolderFSRef, iconrFSRef;
-    SInt16 file;
+    ResFileRefNum file;
     OSErr result;
     struct HFSUniStr255 filename;
     struct FSCatalogInfo catInfo;
@@ -1305,7 +1305,7 @@ enum {
     unsigned char* pDest;
     int x, y;
     unsigned char alphaByte;
-    float oneOverAlpha;
+    CGFloat oneOverAlpha;
     
     // Get information about the bitmapImageRep.
     long pixelsWide      = [bitmapImageRep pixelsWide];
@@ -1356,7 +1356,7 @@ enum {
 						// lossiness unfortunately) when retrieving the bitmap data.
 						*pDest++ = alphaByte = *(pSrc+3);
 						if (alphaByte) {
-							oneOverAlpha = 255.0f / (float)alphaByte;
+							oneOverAlpha = 255.0 / (CGFloat)alphaByte;
 							*pDest++ = *(pSrc+0) * oneOverAlpha;
 							*pDest++ = *(pSrc+1) * oneOverAlpha;
 							*pDest++ = *(pSrc+2) * oneOverAlpha;
@@ -1391,7 +1391,12 @@ enum {
 
 + (Handle) get8BitDataFromBitmapImageRep:(NSBitmapImageRep*)bitmapImageRep requiredPixelSize:(int)requiredPixelSize
 {
-#ifndef MAC_OS_X_VERSION_10_9
+#ifdef MAC_OS_X_VERSION_10_9
+    typedef struct __CGDirectPalette *CGDirectPaletteRef;
+    extern CGDirectPaletteRef CGPaletteCreateDefaultColorPalette(void);
+    extern void CGPaletteRelease(CGDirectPaletteRef pal);
+    extern CFIndex CGPaletteGetIndexForColor(CGDirectPaletteRef palette, CGDeviceColor color);
+#endif
     Handle hRawData;
     unsigned char* pRawData;
     Size rawDataSize;
@@ -1422,7 +1427,7 @@ enum {
 	}
     if (bitsPerSample != 8)
 	{
-		NSLog(@"get8BitDataFromBitmapImageRep:requiredPixelSize: returning NULL due to bitsPerSample == %d", bitsPerSample);
+        NSLog(@"get8BitDataFromBitmapImageRep:requiredPixelSize: returning NULL due to bitsPerSample == %ld", bitsPerSample);
 		return NULL;
 	}
 	
@@ -1444,9 +1449,9 @@ enum {
 			for (y = 0; y < pixelsHigh; y++) {
 				pSrc = bitmapData + y * bytesPerRow;
 				for (x = 0; x < pixelsWide; x++) {
-					cgCol.red = ((float)*(pSrc)) / 255;
-					cgCol.green = ((float)*(pSrc+1)) / 255;
-					cgCol.blue = ((float)*(pSrc+2)) / 255;
+					cgCol.red = ((CGFloat)*(pSrc)) / 255;
+					cgCol.green = ((CGFloat)*(pSrc+1)) / 255;
+					cgCol.blue = ((CGFloat)*(pSrc+2)) / 255;
 	
 					*pDest++ = CGPaletteGetIndexForColor(cgPal, cgCol);
 	
@@ -1457,9 +1462,9 @@ enum {
 			for (y = 0; y < pixelsHigh; y++) {
 				pSrc = bitmapData + y * bytesPerRow;
 				for (x = 0; x < pixelsWide; x++) {
-					cgCol.red = ((float)*(pSrc)) / 255;
-					cgCol.green = ((float)*(pSrc+1)) / 255;
-					cgCol.blue = ((float)*(pSrc+2)) / 255;
+					cgCol.red = ((CGFloat)*(pSrc)) / 255;
+					cgCol.green = ((CGFloat)*(pSrc+1)) / 255;
+					cgCol.blue = ((CGFloat)*(pSrc+2)) / 255;
 	
 					*pDest++ = CGPaletteGetIndexForColor(cgPal, cgCol);
 	
@@ -1472,14 +1477,11 @@ enum {
 	}
 	else
 	{
-		NSLog(@"get8BitDataFromBitmapImageRep:requiredPixelSize: returning NULL due to samplesPerPixel == %d, bitsPerPixel == %", samplesPerPixel, bitsPerPixel);
+        NSLog(@"get8BitDataFromBitmapImageRep:requiredPixelSize: returning NULL due to samplesPerPixel == %ld, bitsPerPixel == %ld", samplesPerPixel, bitsPerPixel);
 		return NULL;
 	}
 	
     return hRawData;
-#else
-    return NULL;
-#endif
 }
 
 + (Handle) get8BitMaskFromBitmapImageRep:(NSBitmapImageRep*)bitmapImageRep requiredPixelSize:(int)requiredPixelSize
@@ -1683,7 +1685,7 @@ enum {
 + (BOOL) canInitWithScrap
 {
     NSArray *types = [[NSPasteboard generalPasteboard] types];
-    return [types containsObject:ICONFAMILY_UTI] || [types containsObject:ICONFAMILY_PBOARD_TYPE];
+    return [types containsObject:(NSString*)kUTTypeAppleICNS] || [types containsObject:ICONFAMILY_PBOARD_TYPE];
 }
 
 + (IconFamily*) iconFamilyWithScrap
@@ -1695,7 +1697,7 @@ enum {
 {
     NSPasteboard *pboard = [NSPasteboard generalPasteboard];
 
-    NSData *data = [pboard dataForType:ICONFAMILY_UTI];
+    NSData *data = [pboard dataForType:(NSString*)kUTTypeAppleICNS];
     if( !data )
         data = [pboard dataForType:ICONFAMILY_PBOARD_TYPE];
     if( !data )
@@ -1713,9 +1715,9 @@ enum {
 {
     NSPasteboard *pboard = [NSPasteboard generalPasteboard];
 
-    [pboard declareTypes:[NSArray arrayWithObjects:ICONFAMILY_UTI, ICONFAMILY_PBOARD_TYPE, nil] owner:self];
+    [pboard declareTypes:[NSArray arrayWithObjects:(NSString*)kUTTypeAppleICNS, ICONFAMILY_PBOARD_TYPE, nil] owner:self];
     NSData *data = [self data];
-    [pboard setData:data forType:ICONFAMILY_UTI];
+    [pboard setData:data forType:(NSString*)kUTTypeAppleICNS];
     [pboard setData:data forType:ICONFAMILY_PBOARD_TYPE];
 
     return YES;

@@ -13,9 +13,9 @@
 #include <vector>
 
 
-void gray64fromRgb64(double* dest, const double* src, int w, int h) {
-  for (int y = 0; y < h; ++y) {
-    for (int x = 0; x < w; ++x) {
+void gray64fromRgb64(double* dest, const double* src, size_t w, size_t h) {
+  for (size_t y = 0; y < h; ++y) {
+    for (size_t x = 0; x < w; ++x) {
       dest[y*w + x] =
           0.299 * src[3*(y*w + x) + 0]  // red
         + 0.587 * src[3*(y*w + x) + 1]  // green
@@ -24,10 +24,10 @@ void gray64fromRgb64(double* dest, const double* src, int w, int h) {
   }
 }
 
-void rgb64fromRgba32(double* dest, unsigned char* src, int w, int h) {
-  int bps = 4 * w;
-  for (int y = 0; y < h; ++y) {
-    for (int x = 0; x < w; ++x) {
+void rgb64fromRgba32(double* dest, unsigned char* src, size_t w, size_t h) {
+  size_t bps = 4 * w;
+  for (size_t y = 0; y < h; ++y) {
+    for (size_t x = 0; x < w; ++x) {
       dest[(y*w + x)*3 + 0] = src[y*bps + 4*x + 1]/255.0;
       dest[(y*w + x)*3 + 1] = src[y*bps + 4*x + 2]/255.0;
       dest[(y*w + x)*3 + 2] = src[y*bps + 4*x + 3]/255.0;
@@ -35,10 +35,10 @@ void rgb64fromRgba32(double* dest, unsigned char* src, int w, int h) {
   }
 }
 
-void mask64fromRgba32(double* dest, unsigned char* src, int w, int h) {
-  int bps = 4 * w;
-  for (int y = 0; y < h; ++y)
-    for (int x = 0; x < w; ++x)
+void mask64fromRgba32(double* dest, unsigned char* src, size_t w, size_t h) {
+  size_t bps = 4 * w;
+  for (size_t y = 0; y < h; ++y)
+    for (size_t x = 0; x < w; ++x)
       dest[y*w + x] = src[y*bps + 4*x + 0]/255.0;
 }
 
@@ -50,19 +50,19 @@ T clamp(T v, T minV, T maxV) {
   return v;
 }
 
-double* allocImage(int w, int h, int c = 1) {
+double* allocImage(size_t w, size_t h, int c = 1) {
   return (double*)malloc(w * h * c * sizeof(double));
 }
 
 class Img {
  public:
-  int w, h;
+  size_t w, h;
   int c;
   double* pix;
 
   Img() : w(0), h(0), c(0), pix(NULL) {}
 
-  Img(int iw, int ih, int ic = 1) : w(iw), h(ih), c(ic),
+  Img(size_t iw, size_t ih, int ic = 1) : w(iw), h(ih), c(ic),
       pix(allocImage(w, h, c))
   { }
 
@@ -81,7 +81,7 @@ class Img {
     pix = NULL;
   }
 
-  void setSize(int nw, int nh, int nc = 1) {
+  void setSize(size_t nw, size_t nh, int nc = 1) {
     if (pix)
       free(pix);
     w = nw;
@@ -188,7 +188,7 @@ ImageCollection loadImageSource(const char* name)
   return image_source;
 }
 
-int getImageCount(ImageCollection image_source)
+size_t getImageCount(ImageCollection image_source)
 {
   return CGImageSourceGetCount(image_source);
 }
@@ -222,8 +222,8 @@ bool imageFromSource(CGImageSourceRef image_source,
 	  return result;
   }
 
-  unsigned width = CGImageGetWidth(image);
-  unsigned height = CGImageGetHeight(image);
+  size_t width = CGImageGetWidth(image);
+  size_t height = CGImageGetHeight(image);
 
   data = malloc(width * height * 4);
   memset(data, 0, width * height * 4);
@@ -406,17 +406,17 @@ void gauss(double* dest, int w, int h, double sigma) {
 // Pixels outside of the error are assumed to have the value of the nearest
 // border pixel.
 // fw must be odd.
-void filter(double* dst, const double* src, int w, int h,
+void filter(double* dst, const double* src, ssize_t w, ssize_t h,
     double* filter, int fw, int nChans = 1) {
   assert(fw%2 != 0);
-  for (int y = 0; y < h; ++y) {
-    for (int x = 0; x < w; ++x) {
+  for (ssize_t y = 0; y < h; ++y) {
+    for (ssize_t x = 0; x < w; ++x) {
       for (int c = 0; c < nChans; ++c) {
         *dst = 0.0;
-        for (int dy = -(fw - 1)/2, idy = 0; idy < fw; ++dy, ++idy) {
-          for (int dx = -(fw - 1)/2, idx = 0; idx < fw; ++dx, ++idx) {
+        for (ssize_t dy = -(fw - 1)/2, idy = 0; idy < fw; ++dy, ++idy) {
+          for (ssize_t dx = -(fw - 1)/2, idx = 0; idx < fw; ++dx, ++idx) {
             *dst +=
-              src[(clamp(y + dy, 0, h-1)*w + clamp(x + dx, 0, w-1))*nChans + c]
+              src[(clamp(y + dy, 0l, h-1)*w + clamp(x + dx, 0l, w-1))*nChans + c]
               * filter[idy*fw + idx];
           }
         }
@@ -426,28 +426,28 @@ void filter(double* dst, const double* src, int w, int h,
   }
 }
 
-void separableFilter33(double* dst, const double* src, int w, int h,
+void separableFilter33(double* dst, const double* src, size_t w, size_t h,
     double fx[3], double fy[3], int nChans = 1) {
   double f[3 * 3];
-  for (int y = 0; y < 3; ++y)
-    for (int x = 0; x < 3; ++x)
+  for (size_t y = 0; y < 3; ++y)
+    for (size_t x = 0; x < 3; ++x)
       f[y*3 + x] = fy[y] * fx[x];
   filter(dst, src, w, h, f, 3, nChans);
 }
 
-void calcDx(double* dst, const double* src, int w, int h, int nChans = 1) {
+void calcDx(double* dst, const double* src, size_t w, size_t h, int nChans = 1) {
   double xfilter[] = { -0.5, 0, 0.5 };
   double yfilter[3]; gauss(yfilter, 3, 1, 0.8);
   separableFilter33(dst, src, w, h, xfilter, yfilter, nChans);
 }
 
-void calcDy(double* dst, const double* src, int w, int h, int nChans = 1) {
+void calcDy(double* dst, const double* src, size_t w, size_t h, int nChans = 1) {
   double xfilter[3]; gauss(xfilter, 3, 1, 0.8);
   double yfilter[] = { -0.5, 0, 0.5 };
   separableFilter33(dst, src, w, h, xfilter, yfilter, nChans);
 }
 
-void calcDt(double* dst, const double* src0, const double* src1, int w, int h,
+void calcDt(double* dst, const double* src0, const double* src1, size_t w, size_t h,
     int nChans = 1, const double* mask = NULL) {
   double f[3 * 3]; gauss(f, 3, 3, 1.0);
 
@@ -467,8 +467,8 @@ void calcDt(double* dst, const double* src0, const double* src1, int w, int h,
     // So the formula below is not 100% correct.
   }
 
-  for (int y = 0; y < h; ++y) {
-    for (int x = 0; x < w; ++x) {
+  for (size_t y = 0; y < h; ++y) {
+    for (size_t x = 0; x < w; ++x) {
       for (int c = 0; c < nChans; ++c) {
         if (!mask)
           dst[(y*w + x)*nChans + c] -= tmp.pix[(y*w + x)*nChans + c];
@@ -497,17 +497,17 @@ double lerp(double s, double x0, double x1) {
   return x0 + s*(x1 - x0);
 }
 
-double sample(const double* src, int w, int h, int nc,
+double sample(const double* src, size_t w, size_t h, int nc,
     double x, double y, int c) {
 #if 1
   // extend border
-  int x0 = clamp((int)x, 0, w-1);
-  int x1 = clamp(x0 + 1, 0, w-1);
-  double fx = x - (int)x;
+  size_t x0 = clamp((size_t)x, 0lu, w-1);
+  size_t x1 = clamp(x0 + 1, 0lu, w-1);
+  double fx = x - (size_t)x;
 
-  int y0 = clamp((int)y, 0, h-1);
-  int y1 = clamp(y0 + 1, 0, h-1);
-  double fy = y - (int)y;
+  size_t y0 = clamp((size_t)y, 0lu, h-1);
+  size_t y1 = clamp(y0 + 1, 0lu, h-1);
+  double fy = y - (size_t)y;
 
   double s0 = lerp(fx, src[(y0*w + x0)*nc + c], src[(y0*w + x1)*nc + c]);
   double s1 = lerp(fx, src[(y1*w + x0)*nc + c], src[(y1*w + x1)*nc + c]);
@@ -536,14 +536,14 @@ double sample(const double* src, int w, int h, int nc,
 //   x' = a[0] + a[1] * x + a[2] * y
 //   y' = a[3] + a[4] * x + a[5] * y
 // Uses an inverse mapping and linear interpolation to fight aliasing
-void interp2(double* dest, const double* src, int w, int h, double a[6],
+void interp2(double* dest, const double* src, size_t w, size_t h, double a[6],
     int nc = 1) {
   // Found by Cramer's rule applied to homogenous coordinates
   double det = a[1]*a[5] - a[2]*a[4];
   double aInv[6] = { (a[2]*a[3] - a[0]*a[5])/det,  a[5]/det, -a[2]/det,
                      (a[0]*a[4] - a[1]*a[3])/det, -a[4]/det,  a[1]/det };
-  for (int y = 0; y < h; ++y) {
-    for (int x = 0; x < w; ++x) {
+  for (size_t y = 0; y < h; ++y) {
+    for (size_t x = 0; x < w; ++x) {
 
       double dx = x - (w - 1)/2.0;
       double dy = y - (h - 1)/2.0;
@@ -562,7 +562,7 @@ void interp2(double* dest, const double* src, int w, int h, double a[6],
 }
 
 // Uses only translation/scaling
-void interp2Scale(double* dest, const double* src, int w, int h, double a[4],
+void interp2Scale(double* dest, const double* src, size_t w, size_t h, double a[4],
     int nc = 1) {
   double aFull[] = { a[0], a[1], 0, a[2], 0, a[3] };
   interp2(dest, src, w, h, aFull, nc);
@@ -673,7 +673,7 @@ bool gaussJordan(Num* matrix, Num* rhs, int n)
 
 // Computes the flow from i0 to i1, stores results in a. a must contain a
 // valid close starting value (e.g. { 0, 1, 0, 1 })
-void basicFlow(const double* i0, const double* i1, int w, int h, double* a,
+void basicFlow(const double* i0, const double* i1, size_t w, size_t h, double* a,
     int nc, int iters, const double* mask, int index) {
   // XXX: add ROI
   const double EPS = 1e-4;
@@ -768,12 +768,12 @@ void basicFlow(const double* i0, const double* i1, int w, int h, double* a,
   }
 }
 
-void downsample2(double* dst, const double* src, int w, int h, int nc = 1) {
-  for (int y = 0; y < h/2; ++y) {
-    for (int x = 0; x < w/2; ++x) {
+void downsample2(double* dst, const double* src, size_t w, size_t h, int nc = 1) {
+  for (size_t y = 0; y < h/2; ++y) {
+    for (size_t x = 0; x < w/2; ++x) {
       for (int c = 0; c < nc; ++c) {
-        int di = (y*(w/2) + x)*nc;
-        int si = (2*y*w + 2*x)*nc;
+        size_t di = (y*(w/2) + x)*nc;
+        size_t si = (2*y*w + 2*x)*nc;
         for (int c = 0; c < nc; ++c) {
           dst[di + c] = src[si + c];
           if (x + 1 < w) dst[di + c] += src[si + nc + c];
@@ -786,7 +786,7 @@ void downsample2(double* dst, const double* src, int w, int h, int nc = 1) {
   }
 }
 
-Img** gaussianPyramid(const double* src, int w, int h,
+Img** gaussianPyramid(const double* src, size_t w, size_t h,
     double sigma, int levels, int nc = 1) {
   Img** pyr = new Img*[levels];
   pyr[0] = new Img(w, h, nc);
@@ -810,7 +810,7 @@ void freePyr(Img** pyr, int levels) {
   delete [] pyr;
 }
 
-void pyramidFlow(const double* i0, const double* i1, int w, int h, double* a,
+void pyramidFlow(const double* i0, const double* i1, size_t w, size_t h, double* a,
     int levels, const double* mask, int index) {
   Img** pyr0 = gaussianPyramid(i0, w, h, 0.8, levels, 3);
   Img** pyr1 = gaussianPyramid(i1, w, h, 0.8, levels, 3);
@@ -915,12 +915,12 @@ int main(int argc, char* argv[]) {
   ImageCollection docIcons = loadImageSource(argv[1]);
   ImageCollection appIcons = loadImageSource(argv[2]);
 
-  int numDocs = getImageCount(docIcons);
-  int numApps = getImageCount(appIcons);
+  size_t numDocs = getImageCount(docIcons);
+  size_t numApps = getImageCount(appIcons);
   if (numDocs != numApps)
-    printf("Image counts do not match (%d != %d)\n", numDocs, numApps);
+    printf("Image counts do not match (%zu != %zu)\n", numDocs, numApps);
 
-  std::map<int, std::vector<double> > foundRects;
+  std::map<size_t, std::vector<double> > foundRects;
   for (int docIndex = 0, appIndex = 0;
       docIndex < numDocs && appIndex < numApps;) {
 
@@ -991,7 +991,7 @@ int main(int argc, char* argv[]) {
       return -1;
     }
 
-    printf("%dx%d\n", appIcon.w, appIcon.h);
+    printf("%zux%zu\n", appIcon.w, appIcon.h);
 
     //double f[5 * 5]; gauss(f, 5, 5, 0.8);
     //filter(i0.pix, i1.pix, i0.w, i0.h, f, 5, n);
@@ -1017,13 +1017,13 @@ int main(int argc, char* argv[]) {
     for (int t = 0; t < 4; ++t)
       foundRects[docIcon.w].push_back(a[t]);
 
-    ++docIndex, ++appIndex;
+    ++docIndex; ++appIndex;
   }
 
-  std::map<int, std::vector<double> >::iterator it, end = foundRects.end();
+  std::map<size_t, std::vector<double> >::iterator it, end = foundRects.end();
   printf("\nrects = {\n");
   for (it = foundRects.begin(); it != end; ++it) {
-    printf("    %3d: (", it->first);
+    printf("    %3lu: (", it->first);
     for (int t = 0; t < 4; ++t)
       printf("%8.4f%s", it->second[t], t == 3 ? "" : ", ");
     printf("),\n");
